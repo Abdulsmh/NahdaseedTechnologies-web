@@ -13,6 +13,7 @@ export default function CoreTech() {
     projectDetails: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const coreTechServices = [
     {
@@ -47,9 +48,33 @@ export default function CoreTech() {
     setSubmitted(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+
+    const form = e.target;
+    const data = new FormData(form);
+
+    try {
+      const response = await fetch('https://formspree.io/f/mzebegwg', {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Accept': 'json'
+        }
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert('There was a problem submitting your request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Network error. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -202,6 +227,7 @@ export default function CoreTech() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name / Contact Person</label>
                   <input 
                     type="text" 
+                    name="clientName"
                     required
                     value={formData.clientName}
                     onChange={(e) => setFormData({...formData, clientName: e.target.value})}
@@ -213,6 +239,7 @@ export default function CoreTech() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Organization / Business Name (Optional)</label>
                   <input 
                     type="text" 
+                    name="organization"
                     value={formData.organization}
                     onChange={(e) => setFormData({...formData, organization: e.target.value})}
                     placeholder="Your Company Ltd"
@@ -224,6 +251,7 @@ export default function CoreTech() {
                     <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
                     <input 
                       type="email" 
+                      name="email"
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -235,6 +263,7 @@ export default function CoreTech() {
                     <label className="block text-xs font-semibold text-slate-300 mb-1">Phone Number (WhatsApp)</label>
                     <input 
                       type="tel" 
+                      name="phone"
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -246,6 +275,7 @@ export default function CoreTech() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Select Core Service</label>
                   <select 
+                    name="service"
                     value={formData.service}
                     onChange={(e) => setFormData({...formData, service: e.target.value})}
                     className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#28A745]"
@@ -259,6 +289,7 @@ export default function CoreTech() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Project Overview / Requirements</label>
                   <textarea 
                     rows="3"
+                    name="projectDetails"
                     required
                     value={formData.projectDetails}
                     onChange={(e) => setFormData({...formData, projectDetails: e.target.value})}
@@ -269,9 +300,10 @@ export default function CoreTech() {
                 <div className="pt-2">
                   <button 
                     type="submit"
+                    disabled={loading}
                     className="w-full bg-[#28A745] hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    Submit Project Request <ArrowRight size={16} />
+                    {loading ? 'Submitting...' : 'Submit Project Request'} <ArrowRight size={16} />
                   </button>
                 </div>
               </form>

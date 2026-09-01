@@ -1,54 +1,55 @@
 import React, { useState } from 'react';
-import { Printer, FileText, Camera, Edit3, Scan, Image as ImageIcon, ArrowRight, CheckCircle, X, Sparkles } from 'lucide-react';
+import { Printer, Globe, Camera, FileText, Scan, Palette, ArrowRight, CheckCircle, X } from 'lucide-react';
 
 export default function CyberCenter() {
   const [selectedService, setSelectedService] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     clientName: '',
-    phone: '',
     email: '',
+    phone: '',
     service: '',
-    instructions: ''
+    serviceDetails: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const cyberServices = [
     {
       title: "Printing & Photocopying",
-      description: "High-speed document printing, colored/monochrome copying, and professional binding services for individuals and corporate offices.",
-      fullDetails: "Equipped with high-output printers for crisp, clean monochrome or full-color documents. We handle bulk printing, thesis binding, spiral binding, and document collation with rapid turnaround times.",
+      desc: "High-speed black & white and vibrant color printing, photocopying, and document binding services for individuals and corporate clients.",
+      fullDetails: "Equipped with professional-grade printers for high-volume duplication, binding, laminating, and large-format document processing with crystal-clear output.",
       icon: <Printer size={24} />
     },
     {
       title: "Online Registrations & Applications",
-      description: "Seamless processing for university admissions, government portals, recruitment forms, and digital submissions.",
-      fullDetails: "Avoid portal errors and delays. Our expert staff manage JAMB, university admissions, NYSC portals, visa applications, scholarship forms, and government digital clearances accurately.",
-      icon: <FileText size={24} />
+      desc: "Seamless assistance for portal registrations, university admissions, NIN, international passports, JAMB, NYSC, and government portals.",
+      fullDetails: "Expert guided processing for online applications, error-free data entry, secure document uploads, and instant printouts for all regional and national digital portals.",
+      icon: <Globe size={24} />
     },
     {
       title: "Passport Photographs",
-      description: "Professional studio capture, digital background adjustment, and instant high-quality passport photo printing.",
-      fullDetails: "Get crisp, compliant passport photographs meeting international standards. Includes instant digital touch-ups, background formatting, and cut-to-size delivery within minutes.",
+      desc: "Instant professional passport and visa photography with background correction, quick printing, and digital copies available on demand.",
+      fullDetails: "Studio-quality passport photographs captured and formatted precisely to official international and national standard dimensions with instant printing.",
       icon: <Camera size={24} />
     },
     {
       title: "Typesetting & Project Handling",
-      description: "Professional document typing, formatting, and structural preparation for academic research, thesis projects, and business proposals.",
-      fullDetails: "From raw handwritten notes or rough drafts to impeccably formatted academic research, project reports, and corporate proposals following strict APA, MLA, or institutional style guides.",
-      icon: <Edit3 size={24} />
+      desc: "Professional typing, formatting, and structural editing for academic research papers, business proposals, CVs, and manuals.",
+      fullDetails: "Comprehensive secretarial services including manuscript formatting, citation management, table creation, and complete project binding for students and professionals.",
+      icon: <FileText size={24} />
     },
     {
       title: "Scanning Services",
-      description: "High-resolution document and image scanning to secure digital formats for easy electronic archiving and transmission.",
-      fullDetails: "Convert physical archives, certificates, books, and records into crystal-clear PDF or image formats optimized for cloud storage, email transmission, or digital applications.",
+      desc: "High-resolution digital scanning of physical documents, certificates, and photos converted into secure PDF, JPEG, or TIFF files.",
+      fullDetails: "Preserve and digitize your physical paperwork securely. We convert bulky archives into clean, searchable digital files ready for email or cloud storage.",
       icon: <Scan size={24} />
     },
     {
-      title: "Creative Design (Flyers, Banners & Logos)",
-      description: "Eye-catching graphic design for invitation cards, marketing flyers, large-format banners, and custom corporate brand logos.",
-      fullDetails: "Elevate your brand or event with stunning visual assets. We design high-impact flyers, flex banners, wedding invitation cards, corporate logos, and social media promotional graphics.",
-      icon: <ImageIcon size={24} />
+      title: "Creative Design",
+      desc: "Eye-catching flyers, business cards, branded letterheads, posters, and logo designs tailored to elevate your business identity.",
+      fullDetails: "Professional graphic design services combining visual appeal with strong marketing layout to make your business or event stand out in the market.",
+      icon: <Palette size={24} />
     }
   ];
 
@@ -58,40 +59,65 @@ export default function CyberCenter() {
     setSubmitted(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+
+    const form = e.target;
+    const data = new FormData(form);
+
+    try {
+      const response = await fetch('https://formspree.io/f/mzebegwg', {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Accept': 'json'
+        }
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert('There was a problem submitting your request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Network error. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="bg-slate-900 text-slate-100 min-h-screen relative">
+    <div className="bg-slate-900 text-slate-100 min-h-screen">
       {/* Header Banner */}
       <div className="bg-[#0D1B3D] border-b border-slate-800 text-white py-16 sm:py-20 px-6 text-center relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#28A745]/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="max-w-4xl mx-auto relative z-10">
           <span className="bg-emerald-950 text-[#28A745] border border-emerald-800/50 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-full inline-block">
-            Division 03
+            Division 02
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mt-4 tracking-tight">
-            Cyber & Business Center
+            NahdaSeed Cyber & Business Center
           </h1>
           <p className="text-slate-300 max-w-2xl mx-auto mt-4 text-sm sm:text-base leading-relaxed">
-            Your trusted neighborhood digital hub for fast administrative processes, professional printing, and creative design services in Fagge, Kano.
+            Your neighborhood hub for fast digital services, professional document processing, online registrations, and creative media printing in Fagge, Kano.
           </p>
         </div>
       </div>
 
-      {/* Services Grid Section */}
+      {/* Services Section */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
-            Everyday Digital & Business Services
+            Digital & Secretarial Services
           </h2>
           <p className="text-slate-400 mt-3 text-sm sm:text-base">
-            Click any service to view complete details or submit a direct processing request online.
+            Click any service card to view requirements or request assistance directly online.
           </p>
         </div>
 
+        {/* Service Cards Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-16">
           {cyberServices.map((service, idx) => (
             <div 
@@ -107,14 +133,14 @@ export default function CyberCenter() {
                   {service.title}
                 </h3>
                 <p className="text-slate-400 text-xs sm:text-sm mt-3 leading-relaxed">
-                  {service.description}
+                  {service.desc}
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-medium">
+              <div className="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-medium">
                 <span className="text-[#28A745] flex items-center gap-1.5">
-                  <CheckCircle size={14} className="shrink-0" /> View Specifications
+                  <CheckCircle size={14} className="shrink-0" /> View Details
                 </span>
-                <span className="text-slate-400 group-hover:text-white transition-colors underline">Request Service</span>
+                <span className="text-slate-400 group-hover:text-white transition-colors underline">Book Service</span>
               </div>
             </div>
           ))}
@@ -124,10 +150,10 @@ export default function CyberCenter() {
         <div className="bg-[#0D1B3D] border border-slate-800 text-white p-8 sm:p-12 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div>
             <h3 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
-              Need a document processed, printed, or designed right away?
+              Need urgent document processing or registration?
             </h3>
             <p className="text-slate-300 text-xs sm:text-sm mt-2 max-w-xl">
-              Visit our physical center at Ari Avenue, Fagge C, Kano or send your digital requests online.
+              Send your request ahead of time or visit our center for prompt assistance.
             </p>
           </div>
           <button 
@@ -171,14 +197,14 @@ export default function CyberCenter() {
                 }}
                 className="bg-[#28A745] hover:bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md inline-flex items-center gap-2 cursor-pointer"
               >
-                Book This Service <ArrowRight size={14} />
+                Proceed to Request <ArrowRight size={14} />
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Online Service Request Modal */}
+      {/* Service Request Form Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#0D1B3D] border border-slate-700 text-white rounded-3xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -190,14 +216,14 @@ export default function CyberCenter() {
             </button>
             
             <h3 className="text-xl sm:text-2xl font-bold text-white">Cyber Center Service Request</h3>
-            <p className="text-slate-300 text-xs mt-1">Submit your request details and our desk team will process or prepare it for you.</p>
+            <p className="text-slate-300 text-xs mt-1">Provide your details and requirements below, and our desk will respond or prepare your task.</p>
 
             {submitted ? (
               <div className="bg-emerald-950/60 border border-emerald-800/50 p-6 rounded-2xl text-center mt-6">
                 <CheckCircle size={40} className="text-[#28A745] mx-auto mb-3" />
-                <h4 className="font-bold text-lg text-white">Request Logged Successfully!</h4>
+                <h4 className="font-bold text-lg text-white">Request Sent Successfully!</h4>
                 <p className="text-xs text-slate-300 mt-2">
-                  Thank you, <strong className="text-white">{formData.clientName}</strong>. Your request for <strong className="text-emerald-400">{formData.service}</strong> has been noted. We will reach out or await your arrival at the center.
+                  Thank you, <strong className="text-white">{formData.clientName}</strong>. Your request for <strong className="text-emerald-400">{formData.service}</strong> has been received at our desk. We will reach out via phone or email shortly.
                 </p>
                 <button 
                   onClick={() => setIsModalOpen(false)}
@@ -212,6 +238,7 @@ export default function CyberCenter() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
                   <input 
                     type="text" 
+                    name="clientName"
                     required
                     value={formData.clientName}
                     onChange={(e) => setFormData({...formData, clientName: e.target.value})}
@@ -221,9 +248,22 @@ export default function CyberCenter() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+                    <input 
+                      type="email" 
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      placeholder="client@mail.com"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#28A745]"
+                    />
+                  </div>
+                  <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1">Phone Number (WhatsApp)</label>
                     <input 
                       type="tel" 
+                      name="phone"
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -231,20 +271,11 @@ export default function CyberCenter() {
                       className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#28A745]"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address (Optional)</label>
-                    <input 
-                      type="email" 
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      placeholder="yourname@gmail.com"
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#28A745]"
-                    />
-                  </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Select Required Service</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Select Service</label>
                   <select 
+                    name="service"
                     value={formData.service}
                     onChange={(e) => setFormData({...formData, service: e.target.value})}
                     className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#28A745]"
@@ -255,22 +286,24 @@ export default function CyberCenter() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Specific Instructions / Details</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Service Details / Instructions</label>
                   <textarea 
                     rows="3"
+                    name="serviceDetails"
                     required
-                    value={formData.instructions}
-                    onChange={(e) => setFormData({...formData, instructions: e.target.value})}
-                    placeholder="Provide details about your printing pages, design text, or registration form type..."
+                    value={formData.serviceDetails}
+                    onChange={(e) => setFormData({...formData, serviceDetails: e.target.value})}
+                    placeholder="Provide details about what you need printed, typed, registered, or scanned..."
                     className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#28A745] resize-none"
                   ></textarea>
                 </div>
                 <div className="pt-2">
                   <button 
                     type="submit"
+                    disabled={loading}
                     className="w-full bg-[#28A745] hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    Submit Service Request <ArrowRight size={16} />
+                    {loading ? 'Submitting...' : 'Submit Service Request'} <ArrowRight size={16} />
                   </button>
                 </div>
               </form>
