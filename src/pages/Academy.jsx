@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { GraduationCap, BookOpen, Terminal, Monitor, Cpu, Palette, ArrowRight, CheckCircle, Brain, Users, X } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 export default function Academy() {
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -65,28 +64,32 @@ export default function Academy() {
     setSubmitted(false);
   };
 
-  const handleSupabaseSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase
-      .from('academy_registrations')
-      .insert([
-        { 
-          full_name: formData.fullName, 
-          email: formData.email, 
-          phone: formData.phone, 
-          course: formData.course 
+    const form = e.target;
+    const data = new FormData(form);
+
+    try {
+      const response = await fetch('https://formspree.io/f/mzebegwg', {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Accept': 'json'
         }
-      ]);
+      });
 
-    setLoading(false);
-
-    if (error) {
-      console.error('Error saving registration:', error);
-      alert('Error saving registration. Please try again.');
-    } else {
-      setSubmitted(true);
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert('There was a problem submitting your registration. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Network error. Please check your connection.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -224,7 +227,7 @@ export default function Academy() {
                 <CheckCircle size={40} className="text-[#28A745] mx-auto mb-3" />
                 <h4 className="font-bold text-lg text-white">Registration Successful!</h4>
                 <p className="text-xs text-slate-300 mt-2">
-                  Thank you, <strong className="text-white">{formData.fullName}</strong>. We have received your application for <strong className="text-emerald-400">{formData.course}</strong> and saved it securely to our database. Our team will contact you shortly.
+                  Thank you, <strong className="text-white">{formData.fullName}</strong>. We have received your application for <strong className="text-emerald-400">{formData.course}</strong> and sent it to our team. We will contact you shortly.
                 </p>
                 <button 
                   onClick={() => setIsModalOpen(false)}
@@ -234,11 +237,12 @@ export default function Academy() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSupabaseSubmit} className="space-y-4 mt-6">
+              <form onSubmit={handleSubmit} className="space-y-4 mt-6">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
                   <input 
                     type="text" 
+                    name="fullName"
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({...formData, fullName: e.target.value})}
@@ -250,6 +254,7 @@ export default function Academy() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
                   <input 
                     type="email" 
+                    name="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -261,6 +266,7 @@ export default function Academy() {
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Phone Number (WhatsApp preferred)</label>
                   <input 
                     type="tel" 
+                    name="phone"
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -271,6 +277,7 @@ export default function Academy() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Select Desired Course</label>
                   <select 
+                    name="course"
                     value={formData.course}
                     onChange={(e) => setFormData({...formData, course: e.target.value})}
                     className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#28A745]"
